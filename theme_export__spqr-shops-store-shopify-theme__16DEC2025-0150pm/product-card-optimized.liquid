@@ -1,0 +1,305 @@
+{% comment %}
+  PRODUCT CARD OPTIMIZADO - SPQR SHOP
+  
+  Uso:
+  {% render 'product-card-optimized', product: product %}
+  
+  Features:
+  - Wishlist toggle
+  - Quick add to cart
+  - Lazy loading
+  - Stock badge
+  - Price comparison
+  - Modo niños compatible
+  - Responsive
+{% endcomment %}
+
+{% liquid
+  assign product_url = product.url
+  assign product_title = product.title | escape
+  assign product_price = product.price
+  assign compare_price = product.compare_at_price
+  assign on_sale = false
+  if compare_price > product_price
+    assign on_sale = true
+    assign discount = compare_price | minus: product_price | times: 100 | divided_by: compare_price
+  endif
+  
+  assign featured_image = product.featured_image
+  assign first_available_variant = product.selected_or_first_available_variant
+  assign in_stock = product.available
+%}
+
+<div class="product-card {% unless in_stock %}sold-out{% endunless %}" data-product-id="{{ product.id }}">
+  
+  <!-- Imagen -->
+  <div class="product-image-wrapper">
+    <a href="{{ product_url }}" class="product-link">
+      {% if featured_image %}
+        <img 
+          src="{{ featured_image | image_url: width: 10 }}"
+          data-src="{{ featured_image | image_url: width: 600 }}"
+          alt="{{ product_title }}"
+          class="product-image"
+          loading="lazy"
+          width="600"
+          height="600">
+      {% else %}
+        <div class="product-image-placeholder">
+          {{ 'product-1' | placeholder_svg_tag }}
+        </div>
+      {% endif %}
+    </a>
+
+    <!-- Badges -->
+    <div class="product-badges">
+      {% if on_sale %}
+        <span class="product-badge badge-sale">-{{ discount }}%</span>
+      {% endif %}
+      
+      {% unless in_stock %}
+        <span class="product-badge badge-sold-out">AGOTADO</span>
+      {% endunless %}
+      
+      {% if product.tags contains 'nuevo' or product.tags contains 'novedad' %}
+        <span class="product-badge badge-new">NUEVO</span>
+      {% endif %}
+      
+      {% if product.metafields.custom.edad_minima %}
+        <span class="product-badge badge-age">{{ product.metafields.custom.edad_minima }}+ años</span>
+      {% endif %}
+    </div>
+
+    <!-- Wishlist Button -->
+    <button 
+      class="wishlist-btn" 
+      data-product-id="{{ product.id }}"
+      data-wishlist-toggle="{{ product.id }}"
+      aria-label="Añadir a favoritos"
+      type="button">
+      🤍
+    </button>
+
+    <!-- Quick View (opcional) -->
+    {% comment %}
+    <button 
+      class="quick-view-btn"
+      data-product-id="{{ product.id }}"
+      aria-label="Vista rápida">
+      👁️
+    </button>
+    {% endcomment %}
+  </div>
+
+  <!-- Información del Producto -->
+  <div class="product-info">
+    
+    <!-- Skills / Habilidades -->
+    {% if product.metafields.custom.habilidades %}
+      <div class="product-skills">
+        {% assign skills = product.metafields.custom.habilidades | split: ',' %}
+        {% for skill in skills limit: 3 %}
+          <span class="skill-tag">{{ skill | strip }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Título -->
+    <h3 class="product-title">
+      <a href="{{ product_url }}">{{ product_title }}</a>
+    </h3>
+
+    <!-- Rating (si tienes app de reviews) -->
+    {% if product.metafields.reviews.rating %}
+      <div class="product-rating">
+        <span class="rating-stars">
+          {% assign rating = product.metafields.reviews.rating | round %}
+          {% for i in (1..5) %}
+            {% if i <= rating %}★{% else %}☆{% endif %}
+          {% endfor %}
+        </span>
+        {% if product.metafields.reviews.count %}
+          <span class="rating-count">({{ product.metafields.reviews.count }})</span>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- Stock Status -->
+    {% if in_stock %}
+      {% assign inventory = first_available_variant.inventory_quantity %}
+      {% if inventory <= 5 and inventory > 0 %}
+        <div class="stock-badge low-stock">
+          <span class="stock-dot"></span>
+          ¡Solo {{ inventory }} disponibles!
+        </div>
+      {% else %}
+        <div class="stock-badge in-stock">
+          <span class="stock-dot"></span>
+          En stock
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="stock-badge out-stock">
+        <span class="stock-dot"></span>
+        Agotado
+      </div>
+    {% endif %}
+
+    <!-- Precio -->
+    <div class="product-price">
+      {% if on_sale %}
+        <span class="price-compare">{{ compare_price | money }}</span>
+        <span class="price-sale">{{ product_price | money }}</span>
+        <span class="price-discount">Ahorras {{ discount }}%</span>
+      {% else %}
+        <span class="price-current">{{ product_price | money }}</span>
+      {% endif %}
+    </div>
+
+    <!-- Botón Añadir al Carrito -->
+    {% if in_stock %}
+      <button 
+        class="product-btn quick-add-btn"
+        data-product-id="{{ product.id }}"
+        data-variant-id="{{ first_available_variant.id }}"
+        data-quick-add="{{ first_available_variant.id }}"
+        type="button">
+        🛒 Añadir al Carrito
+      </button>
+    {% else %}
+      <a href="{{ product_url }}" class="product-btn btn-outline">
+        Ver Detalles
+      </a>
+    {% endif %}
+
+    <!-- Complemento (Cross-selling hint) -->
+    {% if product.metafields.custom.complemento %}
+      <div class="product-complement-hint">
+        <small>💡 Combínalo con: {{ product.metafields.custom.complemento }}</small>
+      </div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+<style>
+/* Estilos específicos del product-card (si no están en style-optimized.css) */
+
+.product-complement-hint {
+  margin-top: var(--space-2);
+  padding: var(--space-1);
+  background: var(--color-bg);
+  border-radius: var(--radius-xs);
+  text-align: center;
+}
+
+.product-complement-hint small {
+  font-size: var(--font-xs);
+  color: var(--color-text-light);
+}
+
+/* Quick View Button (opcional) */
+.quick-view-btn {
+  position: absolute;
+  bottom: var(--space-2);
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: none;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.product-card:hover .quick-view-btn {
+  opacity: 1;
+}
+
+/* Modo Niños Ajustes */
+.kids-mode .product-card {
+  border-width: 3px;
+  border-color: var(--color-accent);
+}
+
+.kids-mode .product-btn {
+  font-size: var(--font-lg);
+  padding: var(--space-3) var(--space-4);
+  min-height: 56px;
+}
+
+.kids-mode .product-title {
+  font-size: var(--font-lg);
+}
+
+.kids-mode .wishlist-btn {
+  width: 52px;
+  height: 52px;
+  font-size: 1.5rem;
+}
+
+/* Loading State para Quick Add */
+.quick-add-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.quick-add-btn .loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .product-card {
+    border-radius: var(--radius-md);
+  }
+  
+  .product-info {
+    padding: var(--space-2);
+  }
+  
+  .product-title {
+    font-size: var(--font-sm);
+    -webkit-line-clamp: 2;
+  }
+  
+  .product-skills {
+    gap: 4px;
+  }
+  
+  .skill-tag {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+}
+
+/* Animación hover mejorada */
+@media (hover: hover) {
+  .product-card:hover {
+    transform: translateY(-10px);
+  }
+  
+  .product-card:hover .product-image {
+    transform: scale(1.1);
+  }
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .product-card,
+  .product-image {
+    transition: none !important;
+  }
+}
+</style>

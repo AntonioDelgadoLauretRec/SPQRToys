@@ -1,0 +1,822 @@
+/* ====================================================================
+   SPQR SHOP - SISTEMA DE DISEÑO DEFINITIVO 2025
+   Arquitectura: Mobile-First | Optimizado: Performance & UX
+   Inspiración: Manual de Diseño SPQR v1.0 + Toys R Us Premium
+   ==================================================================== */
+
+/* === 1. IMPORTACIÓN DE TIPOGRAFÍA === */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@400;700;900&display=swap');
+
+/* === 2. VARIABLES GLOBALES (Design Tokens) === */
+:root {
+  /* Paleta de Colores Principal */
+  --color-primary: #850101;           /* Rojo Burgundy - CTA Principal */
+  --color-primary-dark: #5c0000;      /* Rojo Oscuro - Hover */
+  --color-primary-light: #a81515;     /* Rojo Claro - Variaciones */
+  --color-accent: #E9C46A;            /* Dorado Premium - Detalles */
+  --color-accent-dark: #d4af37;       /* Dorado Oscuro - Hover */
+  --color-dark: #002C54;              /* Azul Marino - Textos Importantes */
+  --color-text: #333333;              /* Gris Oscuro - Texto Base */
+  --color-text-light: #666666;        /* Gris Medio - Texto Secundario */
+  --color-border: #e0e0e0;            /* Bordes Sutiles */
+  --color-bg: #fcfbf9;                /* Fondo Cálido */
+  --color-bg-alt: #f9f9f9;            /* Fondo Alternativo */
+  --color-success: #2e7d32;           /* Verde Éxito */
+  --color-warning: #ff9800;           /* Naranja Advertencia */
+  --color-error: #d80000;             /* Rojo Error */
+  --color-white: #ffffff;
+  
+  /* Sistema de Sombras (Elevation) */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.2);
+  
+  --shadow-primary: 0 4px 15px rgba(133, 1, 1, 0.3);
+  --shadow-primary-hover: 0 8px 25px rgba(133, 1, 1, 0.5);
+  --shadow-accent: 0 4px 15px rgba(233, 196, 106, 0.4);
+  
+  /* Tipografía */
+  --font-title: 'Playfair Display', serif;
+  --font-body: 'Montserrat', sans-serif;
+  
+  /* Tamaños de Fuente (Fluid Typography) */
+  --font-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --font-sm: clamp(0.875rem, 0.85rem + 0.125vw, 1rem);
+  --font-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --font-lg: clamp(1.125rem, 1.05rem + 0.375vw, 1.5rem);
+  --font-xl: clamp(1.5rem, 1.3rem + 1vw, 2.5rem);
+  --font-2xl: clamp(2rem, 1.5rem + 2.5vw, 4rem);
+  --font-3xl: clamp(2.5rem, 2rem + 2.5vw, 5rem);
+  
+  /* Espaciado (Sistema 8pt) */
+  --space-1: 0.5rem;   /* 8px */
+  --space-2: 1rem;     /* 16px */
+  --space-3: 1.5rem;   /* 24px */
+  --space-4: 2rem;     /* 32px */
+  --space-5: 2.5rem;   /* 40px */
+  --space-6: 3rem;     /* 48px */
+  --space-8: 4rem;     /* 64px */
+  --space-10: 5rem;    /* 80px */
+  
+  /* Border Radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  
+  /* Transiciones */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 900;
+  --z-modal: 1000;
+  --z-toast: 1100;
+  
+  /* Breakpoints (para uso en JS) */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}
+
+/* === 3. RESET Y BASE === */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Ocultar headers de Shopify nativos */
+.shopify-section-group-header-group,
+#shopify-section-header,
+header.site-header,
+.header-wrapper,
+.announcement-bar-section {
+  display: none !important;
+  height: 0 !important;
+  visibility: hidden !important;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* === 4. TIPOGRAFÍA === */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .hero-title, .section-title {
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: var(--color-dark);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: var(--space-3);
+}
+
+h1, .h1 { font-size: var(--font-3xl); }
+h2, .h2 { font-size: var(--font-2xl); }
+h3, .h3 { font-size: var(--font-xl); }
+h4, .h4 { font-size: var(--font-lg); }
+
+p {
+  margin-bottom: var(--space-2);
+  line-height: 1.7;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+a:hover {
+  color: var(--color-primary);
+}
+
+/* Focus visible (accesibilidad) */
+*:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* === 5. CONTENEDORES === */
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-2);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 var(--space-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 var(--space-6);
+  }
+}
+
+.container-narrow {
+  max-width: 1200px;
+}
+
+.container-wide {
+  max-width: 1600px;
+}
+
+/* === 6. BOTONES (Sistema Completo) === */
+.btn,
+.button,
+.add-to-cart-btn,
+.add-to-cart-full,
+.btn-checkout,
+.hero-btn,
+.product-btn,
+.promo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-5);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  color: white;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--font-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  text-decoration: none;
+  min-height: 48px; /* Touch target size */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Efecto ripple */
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-primary-hover);
+}
+
+.btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Variantes de Botón */
+.btn-secondary {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+  color: var(--color-dark);
+  box-shadow: var(--shadow-accent);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  box-shadow: none;
+}
+
+.btn-outline:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-ghost {
+  background: none;
+  color: var(--color-text);
+  box-shadow: none;
+  text-transform: none;
+}
+
+.btn-ghost:hover {
+  background: var(--color-bg-alt);
+  transform: none;
+}
+
+/* Botones de tamaño */
+.btn-sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-xs);
+  min-height: 36px;
+}
+
+.btn-lg {
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--font-lg);
+  min-height: 56px;
+}
+
+/* Modo Niños - Botones más grandes */
+.kids-mode .btn,
+.btn-kids {
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--font-lg);
+  min-height: 60px;
+  border-radius: var(--radius-xl);
+}
+
+/* === 7. CARDS (Tarjetas de Producto) === */
+.card-product,
+.product-card,
+.spqr-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-product:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-accent);
+}
+
+/* Imagen de la Card */
+.card-image-wrap,
+.product-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-color: var(--color-bg-alt);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-image-wrap img,
+.product-image-wrapper img,
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+/* Lazy loading placeholder */
+.card-image-wrap img[loading="lazy"],
+.product-image[loading="lazy"] {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.card-product:hover img {
+  transform: scale(1.08);
+}
+
+/* Badges en Cards */
+.product-badge,
+.badge {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  box-shadow: var(--shadow-sm);
+}
+
+.product-badge.sale,
+.badge-sale {
+  background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+  color: white;
+  animation: pulse-badge 2s infinite;
+}
+
+.product-badge.new,
+.badge-new {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+  color: var(--color-dark);
+}
+
+.product-badge.sold-out,
+.badge-sold-out {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+}
+
+.badge-age {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  top: auto;
+  bottom: var(--space-2);
+  right: auto;
+  left: var(--space-2);
+}
+
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Contenido de la Card */
+.card-content,
+.product-info {
+  padding: var(--space-3);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--font-base);
+  font-weight: 600;
+  color: var(--color-dark);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-title a {
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--transition-base);
+}
+
+.product-title a:hover {
+  color: var(--color-primary);
+}
+
+/* Habilidades/Skills */
+.product-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.skill-tag {
+  font-size: var(--font-xs);
+  padding: 4px 8px;
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+  border-radius: var(--radius-xs);
+  font-weight: 500;
+}
+
+/* Rating */
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+  font-size: var(--font-sm);
+}
+
+.rating-stars {
+  color: var(--color-accent);
+  letter-spacing: 2px;
+}
+
+.rating-count {
+  color: var(--color-text-light);
+}
+
+/* Precio */
+.product-price {
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.price-current,
+.price-regular {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.price-compare,
+.price-original {
+  font-size: var(--font-base);
+  color: var(--color-text-light);
+  text-decoration: line-through;
+}
+
+.price-sale {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--color-error);
+}
+
+.price-discount {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: var(--color-error);
+  background: rgba(216, 0, 0, 0.1);
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+}
+
+/* Stock Status */
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.stock-badge.in-stock {
+  color: var(--color-success);
+}
+
+.stock-badge.low-stock {
+  color: var(--color-warning);
+  animation: pulse-badge 2s infinite;
+}
+
+.stock-badge.out-stock {
+  color: var(--color-error);
+}
+
+.stock-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Wishlist Button */
+.wishlist-btn {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  background: white;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+  z-index: 3;
+  font-size: 1.2em;
+}
+
+.wishlist-btn:hover {
+  transform: scale(1.1);
+  background: var(--color-primary);
+  color: white;
+}
+
+.wishlist-btn.is-favorited {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* === 8. GRIDS RESPONSIVOS === */
+.products-grid,
+.categories-grid,
+.features-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+/* Mobile: 2 columnas */
+.products-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+}
+
+/* Tablet: 3 columnas */
+@media (min-width: 640px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+/* Desktop: 4 columnas */
+@media (min-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+.categories-grid {
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .categories-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* === 9. UTILIDADES === */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+
+.mb-1 { margin-bottom: var(--space-1); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+
+.hidden { display: none !important; }
+.visible { display: block !important; }
+
+@media (max-width: 767px) {
+  .hide-mobile { display: none !important; }
+}
+
+@media (min-width: 768px) {
+  .hide-desktop { display: none !important; }
+}
+
+/* === 10. ANIMACIONES === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideInRight 0.5s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === 11. TOAST NOTIFICATIONS === */
+.toast {
+  position: fixed;
+  bottom: var(--space-4);
+  right: var(--space-4);
+  background: white;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  z-index: var(--z-toast);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 400px;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.toast-success {
+  border-left: 4px solid var(--color-success);
+}
+
+.toast-error {
+  border-left: 4px solid var(--color-error);
+}
+
+.toast-warning {
+  border-left: 4px solid var(--color-warning);
+}
+
+/* === 12. LOADING STATES === */
+.loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--color-primary);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === 13. MODO NIÑOS === */
+.kids-mode {
+  /* Todo más grande y colorido */
+}
+
+.kids-mode .product-card {
+  border: 3px solid var(--color-accent);
+  border-radius: var(--radius-xl);
+}
+
+.kids-mode .btn {
+  font-size: var(--font-lg);
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-xl);
+}
+
+.kids-mode .product-title {
+  font-size: var(--font-lg);
+}
+
+/* === 14. PRINT STYLES === */
+@media print {
+  .no-print,
+  header,
+  footer,
+  .btn,
+  .product-badge {
+    display: none !important;
+  }
+}
+
+/* === FIN DEL SISTEMA DE DISEÑO === */

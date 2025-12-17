@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page_title }}{% if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}</title>
+
+  {{ 'style-optimized.css' | asset_url | stylesheet_tag }}
+  
+  {{ content_for_header }}
+
+  <style>
+    /* === VARIABLES === */
+    :root {
+      --color-primary: #002C54;
+      --color-secondary: #850101;
+      --color-accent: #E9C46A;
+      --color-text: #2C3E50;
+      --color-bg: #FFFFFF;
+      --color-light-bg: #F8F9FA;
+      --header-height: 70px;
+      --max-width: 1400px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* === RESET === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--color-text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: var(--transition);
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: var(--transition);
+    }
+
+    /* === ANNOUNCEMENT BAR === */
+    .announcement-bar {
+      background: linear-gradient(135deg, #850101 0%, #b30000 100%);
+      color: white;
+      text-align: center;
+      padding: 12px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(133, 1, 1, 0.2);
+    }
+
+    .announcement-bar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+
+    /* === HEADER === */
+    .site-header {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      transition: var(--transition);
+    }
+
+    .site-header.scrolled {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    .header-container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 clamp(20px, 5vw, 40px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--header-height);
+      gap: 20px;
+    }
+
+    /* Menu Toggle */
+    .menu-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      transition: var(--transition);
+    }
+
+    .menu-toggle:hover {
+      background: #003d73;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 44, 84, 0.3);
+    }
+
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 22px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 100%;
+      height: 2.5px;
+      background: white;
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+
+    .menu-toggle:hover .hamburger span:nth-child(1) {
+      transform: translateX(-3px);
+    }
+
+    .menu-toggle:hover .hamburger span:nth-child(3) {
+      transform: translateX(3px);
+    }
+
+    /* Logo */
+    .header-logo {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .header-logo a {
+      display: block;
+      max-width: 180px;
+      transition: var(--transition);
+    }
+
+    .header-logo img {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+      transition: var(--transition);
+    }
+
+    .header-logo a:hover img {
+      transform: scale(1.05);
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+    }
+
+    /* Header Actions */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    /* Búsqueda */
+    .header-search {
+      display: flex;
+      align-items: center;
+    }
+
+    .search-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-toggle:hover {
+      background: rgba(233, 196, 106, 0.15);
+      transform: scale(1.1);
+    }
+
+    /* Carrito */
+    .header-cart {
+      position: relative;
+    }
+
+    .header-cart a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: var(--color-accent);
+      border-radius: 12px;
+      color: var(--color-primary);
+      font-size: 1.8rem;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .header-cart a:hover {
+      background: #f5d88f;
+      transform: translateY(-3px) rotate(5deg);
+      box-shadow: 0 6px 16px rgba(233, 196, 106, 0.4);
+    }
+
+    .cart-pill {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: var(--color-secondary);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 2px solid white;
+      box-shadow: 0 2px 6px rgba(133, 1, 1, 0.3);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* Trust Badges */
+    .trust-badges {
+      background: var(--color-light-bg);
+      border-top: 1px solid rgba(0,0,0,0.06);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .trust-badges-container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 16px clamp(20px, 5vw, 40px);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      align-items: center;
+    }
+
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+      transition: var(--transition);
+    }
+
+    .trust-badge:hover {
+      transform: translateY(-2px);
+    }
+
+    .trust-badge-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .trust-badge-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      line-height: 1.3;
+    }
+
+    /* === SEARCH OVERLAY === */
+    .search-bar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 10002;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .search-bar-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .search-bar-content {
+      width: 90%;
+      max-width: 700px;
+      position: relative;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from { 
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .search-bar-input {
+      width: 100%;
+      padding: 25px 70px 25px 25px;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.5rem;
+      font-weight: 500;
+      box-shadow: 0 10px 50px rgba(233, 196, 106, 0.3);
+      outline: none;
+    }
+
+    .search-bar-input:focus {
+      box-shadow: 0 10px 60px rgba(233, 196, 106, 0.5);
+    }
+
+    .search-bar-close {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: white;
+      font-size: 3rem;
+      cursor: pointer;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .search-bar-close:hover {
+      background: rgba(233, 196, 106, 0.2);
+      transform: translateY(-50%) rotate(90deg);
+    }
+
+    /* === SIDE MENU === */
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 9998;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      backdrop-filter: blur(4px);
+    }
+
+    .menu-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: min(320px, 85vw);
+      height: 100%;
+      background: var(--color-primary);
+      z-index: 9999;
+      transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .side-menu.active {
+      left: 0;
+    }
+
+    .menu-header {
+      padding: 25px 20px;
+      background: linear-gradient(135deg, #001a33 0%, #002C54 100%);
+      border-bottom: 2px solid var(--color-accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .menu-logo img {
+      max-width: 120px;
+      height: auto;
+    }
+
+    .menu-close {
+      color: white;
+      font-size: 2rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .menu-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(90deg);
+    }
+
+    .menu-nav {
+      padding: 20px 0;
+    }
+
+    .menu-nav a {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 16px 25px;
+      color: white;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: var(--transition);
+      border-left: 3px solid transparent;
+    }
+
+    .menu-nav a:hover,
+    .menu-nav a.active {
+      background: rgba(233, 196, 106, 0.15);
+      border-left-color: var(--color-accent);
+      padding-left: 30px;
+    }
+
+    .menu-nav a span:first-child {
+      font-size: 1.5rem;
+    }
+
+    /* === FOOTER === */
+    .site-footer {
+      background: var(--color-primary);
+      color: white;
+      padding: 60px 0 30px;
+      margin-top: 80px;
+    }
+
+    .footer-container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 clamp(20px, 5vw, 40px);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-bottom: 50px;
+    }
+
+    .footer-column h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      color: var(--color-accent);
+    }
+
+    .footer-column ul {
+      list-style: none;
+    }
+
+    .footer-column ul li {
+      margin-bottom: 12px;
+    }
+
+    .footer-column ul a {
+      color: rgba(255, 255, 255, 0.8);
+      transition: var(--transition);
+    }
+
+    .footer-column ul a:hover {
+      color: var(--color-accent);
+      padding-left: 8px;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 30px;
+      text-align: center;
+    }
+
+    .footer-logo {
+      margin-bottom: 20px;
+    }
+
+    .footer-logo img {
+      max-width: 150px;
+      margin: 0 auto;
+      opacity: 0.9;
+    }
+
+    .footer-bottom p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+    }
+
+    /* === MEJORAS PROFESIONALES === */
+    .product-card,
+    .cart-items,
+    .summary-card,
+    .filter-section {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .product-card:hover {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+    }
+
+    section {
+      padding: 60px 0;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .announcement-bar {
+        font-size: 0.8rem;
+        padding: 10px 15px;
+      }
+
+      .header-container {
+        padding: 0 15px;
+        height: 60px;
+      }
+
+      .header-logo a {
+        max-width: 140px;
+      }
+
+      .menu-toggle {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
+
+      .hamburger {
+        width: 18px;
+        gap: 3px;
+      }
+
+      .header-cart a {
+        width: 42px;
+        height: 42px;
+        font-size: 1.5rem;
+      }
+
+      .trust-badges-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 12px 15px;
+      }
+
+      .trust-badge-text {
+        font-size: 0.75rem;
+      }
+
+      .search-bar-input {
+        font-size: 1.2rem;
+        padding: 20px 60px 20px 20px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Barra de Anuncios -->
+  <div class="announcement-bar">
+    🎄 Envío GRATIS en pedidos +49€ | Devoluciones hasta el 31 de Enero 2025 🎁
+  </div>
+
+  <!-- Header -->
+  <header class="site-header" id="siteHeader">
+    <div class="header-container">
+      <!-- Menu Toggle -->
+      <button class="menu-toggle" onclick="toggleMenu()">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span>MENÚ</span>
+      </button>
+
+      <!-- Logo -->
+      <div class="header-logo">
+        <a href="/">
+          {% if section.settings.logo != blank %}
+            <img src="{{ section.settings.logo | img_url: '300x' }}" alt="{{ shop.name }}">
+          {% else %}
+            <img src="https://via.placeholder.com/200x80/002C54/E9C46A?text=SPQR" alt="{{ shop.name }}">
+          {% endif %}
+        </a>
+      </div>
+
+      <!-- Actions -->
+      <div class="header-actions">
+        <!-- Búsqueda -->
+        <div class="header-search">
+          <button class="search-toggle" onclick="toggleSearch()" aria-label="Abrir búsqueda">
+            <span style="font-size: 1.8rem;">🔍</span>
+          </button>
+        </div>
+
+        <!-- Carrito -->
+        <div class="header-cart">
+          <a href="/cart" aria-label="Ver carrito">
+            <span class="cart-icon">🛒</span>
+            <span class="cart-pill" data-cart-count>{{ cart.item_count }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Trust Badges -->
+  <div class="trust-badges">
+    <div class="trust-badges-container">
+      <div class="trust-badge">
+        <div class="trust-badge-icon">🚚</div>
+        <div class="trust-badge-text">Envío Gratis<br>+49€</div>
+      </div>
+      <div class="trust-badge">
+        <div class="trust-badge-icon">↩️</div>
+        <div class="trust-badge-text">Devolución<br>30 días</div>
+      </div>
+      <div class="trust-badge">
+        <div class="trust-badge-icon">🔒</div>
+        <div class="trust-badge-text">Pago<br>Seguro</div>
+      </div>
+      <div class="trust-badge">
+        <div class="trust-badge-icon">⚡</div>
+        <div class="trust-badge-text">Entrega<br>24-48h</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu Lateral -->
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+  <nav class="side-menu" id="sideMenu">
+    <div class="menu-header">
+      <div class="menu-logo">
+        {% if section.settings.logo != blank %}
+          <img src="{{ section.settings.logo | img_url: '200x' }}" alt="{{ shop.name }}">
+        {% else %}
+          <img src="https://via.placeholder.com/150x60/FFFFFF/002C54?text=SPQR" alt="{{ shop.name }}">
+        {% endif %}
+      </div>
+      <button class="menu-close" onclick="toggleMenu()" aria-label="Cerrar menú">&times;</button>
+    </div>
+    <div class="menu-nav">
+      <a href="/"><span>🏠</span> Inicio</a>
+      <a href="/collections/all"><span>🎁</span> Catálogo Completo</a>
+      <a href="/collections/montessori"><span>🧩</span> Método Montessori</a>
+      <a href="/collections/construccion"><span>🏗️</span> Construcción</a>
+      <a href="/collections/ciencia"><span>🔬</span> Ciencia & STEM</a>
+      <a href="/collections/disfraces"><span>🎭</span> Disfraces</a>
+      <a href="/collections/novedades"><span>🔥</span> Novedades</a>
+      <a href="/pages/sobre-nosotros"><span>ℹ️</span> Sobre Nosotros</a>
+      <a href="/pages/contacto"><span>📧</span> Contacto</a>
+    </div>
+  </nav>
+
+  <!-- Overlay de Búsqueda -->
+  <div class="search-bar-overlay" id="searchOverlay" onclick="toggleSearch()">
+    <div class="search-bar-content" onclick="event.stopPropagation()">
+      <form action="/search" method="get">
+        <input 
+          type="search" 
+          name="q" 
+          class="search-bar-input"
+          placeholder="¿Qué juguete buscas? Ej: Lego, muñecas, construcción..."
+          autocomplete="off"
+          autofocus
+        >
+      </form>
+      <button class="search-bar-close" onclick="toggleSearch()">&times;</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main role="main">
+    {{ content_for_layout }}
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-column">
+          <h3>Compra</h3>
+          <ul>
+            <li><a href="/collections/all">Catálogo Completo</a></li>
+            <li><a href="/collections/novedades">Novedades</a></li>
+            <li><a href="/collections/ofertas">Ofertas</a></li>
+            <li><a href="/pages/guia-edades">Guía por Edades</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Ayuda</h3>
+          <ul>
+            <li><a href="/pages/envios">Envíos</a></li>
+            <li><a href="/pages/devoluciones">Devoluciones</a></li>
+            <li><a href="/pages/preguntas-frecuentes">Preguntas Frecuentes</a></li>
+            <li><a href="/pages/contacto">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Empresa</h3>
+          <ul>
+            <li><a href="/pages/sobre-nosotros">Sobre Nosotros</a></li>
+            <li><a href="/pages/valores">Nuestros Valores</a></li>
+            <li><a href="/pages/sostenibilidad">Sostenibilidad</a></li>
+            <li><a href="/pages/blog">Blog</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Legal</h3>
+          <ul>
+            <li><a href="/pages/terminos">Términos y Condiciones</a></li>
+            <li><a href="/pages/privacidad">Política de Privacidad</a></li>
+            <li><a href="/pages/cookies">Política de Cookies</a></li>
+            <li><a href="/pages/aviso-legal">Aviso Legal</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-logo">
+          {% if section.settings.logo != blank %}
+            <img src="{{ section.settings.logo | img_url: '200x' }}" alt="{{ shop.name }}">
+          {% else %}
+            <img src="https://via.placeholder.com/180x72/FFFFFF/002C54?text=SPQR" alt="{{ shop.name }}">
+          {% endif %}
+        </div>
+        <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. Pasión por el juego.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  {{ 'scripts-complete.js' | asset_url | script_tag }}
+
+  <script>
+    // Toggle Menú
+    function toggleMenu() {
+      const overlay = document.getElementById('menuOverlay');
+      const menu = document.getElementById('sideMenu');
+      const isActive = menu.classList.contains('active');
+      
+      if (isActive) {
+        menu.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      } else {
+        menu.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    // Toggle Búsqueda
+    function toggleSearch() {
+      const overlay = document.getElementById('searchOverlay');
+      overlay.classList.toggle('active');
+      
+      if (overlay.classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => {
+          document.querySelector('.search-bar-input').focus();
+        }, 300);
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Cerrar con ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const menuActive = document.getElementById('sideMenu').classList.contains('active');
+        const searchActive = document.getElementById('searchOverlay').classList.contains('active');
+        
+        if (menuActive) toggleMenu();
+        if (searchActive) toggleSearch();
+      }
+    });
+
+    // Header Sticky Effect
+    let lastScroll = 0;
+    const header = document.getElementById('siteHeader');
+
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      
+      if (currentScroll > 100) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+      
+      lastScroll = currentScroll;
+    });
+  </script>
+</body>
+</html>

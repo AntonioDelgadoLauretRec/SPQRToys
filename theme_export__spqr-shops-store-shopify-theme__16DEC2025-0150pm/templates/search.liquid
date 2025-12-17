@@ -1,0 +1,742 @@
+{% comment %}
+  ===================================
+  PÁGINA DE BÚSQUEDA - JUGUETERÍA SPQR
+  Con búsqueda predictiva y filtros inteligentes
+  ===================================
+{% endcomment %}
+
+<style>
+  /* === HERO DE BÚSQUEDA === */
+  .search-hero {
+    background: linear-gradient(135deg, #002C54, #001a33);
+    padding: 60px 20px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .search-hero::before {
+    content: '🔍';
+    position: absolute;
+    font-size: 250px;
+    opacity: 0.03;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .search-container {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  .search-title {
+    font-family: 'Playfair Display';
+    font-size: 2.5rem;
+    color: white;
+    text-align: center;
+    margin: 0 0 30px 0;
+  }
+
+  .search-form {
+    position: relative;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 25px 70px 25px 25px;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: 500;
+    background: white;
+    color: #002C54;
+  }
+
+  .search-input:focus {
+    outline: none;
+  }
+
+  .search-input::placeholder {
+    color: #999;
+  }
+
+  .search-submit {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #850101, #a81515);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: white;
+    transition: all 0.3s ease;
+  }
+
+  .search-submit:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 12px rgba(133, 1, 1, 0.4);
+  }
+
+  .search-suggestions {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .suggestions-label {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+
+  .suggestion-tags {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .suggestion-tag {
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .suggestion-tag:hover {
+    background: #E9C46A;
+    color: #002C54;
+    border-color: #E9C46A;
+    transform: translateY(-2px);
+  }
+
+  /* === RESULTADOS === */
+  .search-results {
+    max-width: 1600px;
+    margin: -40px auto 40px;
+    padding: 0 20px;
+    position: relative;
+    z-index: 3;
+  }
+
+  .results-header {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+  }
+
+  .results-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .results-count {
+    font-size: 1.3rem;
+    color: #002C54;
+  }
+
+  .results-count strong {
+    color: #850101;
+    font-size: 1.5rem;
+  }
+
+  .results-query {
+    color: #E9C46A;
+    font-weight: 700;
+  }
+
+  .results-filters {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-button {
+    padding: 10px 20px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .filter-button:hover,
+  .filter-button.active {
+    border-color: #002C54;
+    background: #002C54;
+    color: white;
+  }
+
+  /* === TABS DE RESULTADOS === */
+  .results-tabs {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    border-bottom: 3px solid #E9C46A;
+  }
+
+  .tab-button {
+    padding: 15px 30px;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .tab-button.active {
+    color: #002C54;
+  }
+
+  .tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #002C54;
+  }
+
+  .tab-count {
+    background: #E9C46A;
+    color: #002C54;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    margin-left: 8px;
+    font-weight: 800;
+  }
+
+  /* === GRID DE PRODUCTOS === */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+  }
+
+  .result-item {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+  }
+
+  .result-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  }
+
+  .result-image {
+    position: relative;
+    overflow: hidden;
+    background: #f8f9fa;
+  }
+
+  .result-image img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .result-item:hover .result-image img {
+    transform: scale(1.1);
+  }
+
+  .result-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 6px 12px;
+    background: #850101;
+    color: white;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .result-type {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 6px 12px;
+    background: #E9C46A;
+    color: #002C54;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.75rem;
+  }
+
+  .result-info {
+    padding: 20px;
+  }
+
+  .result-vendor {
+    font-size: 0.8rem;
+    color: #850101;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .result-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #002C54;
+    margin: 0 0 12px 0;
+    line-height: 1.3;
+    min-height: 2.6em;
+  }
+
+  .result-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .result-title a:hover {
+    color: #850101;
+  }
+
+  .result-excerpt {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .result-price {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #002C54;
+  }
+
+  .result-compare {
+    font-size: 1rem;
+    color: #999;
+    text-decoration: line-through;
+    margin-left: 10px;
+  }
+
+  /* === SIN RESULTADOS === */
+  .no-results {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  }
+
+  .no-results-icon {
+    font-size: 6rem;
+    margin-bottom: 20px;
+    opacity: 0.3;
+  }
+
+  .no-results-title {
+    font-family: 'Playfair Display';
+    font-size: 2.5rem;
+    color: #002C54;
+    margin-bottom: 15px;
+  }
+
+  .no-results-text {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+
+  .no-results-suggestions {
+    margin-top: 40px;
+  }
+
+  .suggestions-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #002C54;
+    margin-bottom: 20px;
+  }
+
+  .suggestions-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .suggestion-link {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #850101, #a81515);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+
+  .suggestion-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(133, 1, 1, 0.3);
+  }
+
+  /* === BÚSQUEDAS POPULARES === */
+  .popular-searches {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 16px;
+  }
+
+  .popular-title {
+    font-family: 'Playfair Display';
+    font-size: 2rem;
+    color: #002C54;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .popular-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .popular-item {
+    padding: 15px 20px;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    color: #002C54;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .popular-item:hover {
+    border-color: #E9C46A;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .popular-icon {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 768px) {
+    .search-title {
+      font-size: 2rem;
+    }
+
+    .search-input {
+      padding: 20px 60px 20px 20px;
+      font-size: 1rem;
+    }
+
+    .results-tabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .results-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .result-image img {
+      height: 220px;
+    }
+
+    .no-results-title {
+      font-size: 2rem;
+    }
+
+    .popular-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<!-- === HERO DE BÚSQUEDA === -->
+<div class="search-hero">
+  <div class="search-container">
+    <h1 class="search-title">🔍 Buscar productos</h1>
+    <form action="/search" method="get" class="search-form">
+      <div class="search-input-wrapper">
+        <input 
+          type="search" 
+          name="q" 
+          class="search-input"
+          placeholder="¿Qué juguete buscas? Ej: Lego, muñecas, construcción..."
+          value="{{ search.terms | escape }}"
+          autocomplete="off"
+        >
+        <button type="submit" class="search-submit">🔍</button>
+      </div>
+    </form>
+
+    <div class="search-suggestions">
+      <div class="suggestions-label">Búsquedas populares:</div>
+      <div class="suggestion-tags">
+        <a href="/search?q=lego" class="suggestion-tag">🧱 Lego</a>
+        <a href="/search?q=montessori" class="suggestion-tag">🧩 Montessori</a>
+        <a href="/search?q=construccion" class="suggestion-tag">🏗️ Construcción</a>
+        <a href="/search?q=ciencia" class="suggestion-tag">🔬 Ciencia</a>
+        <a href="/search?q=disfraces" class="suggestion-tag">🎭 Disfraces</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- === RESULTADOS === -->
+<div class="search-results">
+  {% if search.performed %}
+    {% if search.results.size > 0 %}
+      <!-- Header de resultados -->
+      <div class="results-header">
+        <div class="results-info">
+          <div class="results-count">
+            <strong>{{ search.results_count }}</strong> resultados para 
+            <span class="results-query">"{{ search.terms | escape }}"</span>
+          </div>
+          
+          <div class="results-filters">
+            <button class="filter-button active" onclick="filterResults('all')">Todos</button>
+            <button class="filter-button" onclick="filterResults('products')">Productos</button>
+            <button class="filter-button" onclick="filterResults('pages')">Páginas</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs de resultados -->
+      <div class="results-tabs">
+        <button class="tab-button active">
+          🎁 Productos
+          <span class="tab-count">{{ search.results.size }}</span>
+        </button>
+      </div>
+
+      <!-- Grid de resultados -->
+      <div class="results-grid">
+        {% for item in search.results %}
+          {% if item.object_type == 'product' %}
+            <article class="result-item">
+              <div class="result-image">
+                <a href="{{ item.url }}">
+                  <img src="{{ item.featured_image | img_url: '500x500' }}" alt="{{ item.title }}" loading="lazy">
+                </a>
+
+                {% if item.compare_at_price > item.price %}
+                  <span class="result-badge">
+                    -{{ item.compare_at_price | minus: item.price | times: 100.0 | divided_by: item.compare_at_price | round }}%
+                  </span>
+                {% endif %}
+
+                <span class="result-type">Producto</span>
+              </div>
+
+              <div class="result-info">
+                <div class="result-vendor">{{ item.vendor }}</div>
+                
+                <h3 class="result-title">
+                  <a href="{{ item.url }}">{{ item.title }}</a>
+                </h3>
+
+                {% if item.content != blank %}
+                  <p class="result-excerpt">{{ item.content | strip_html | truncatewords: 15 }}</p>
+                {% endif %}
+
+                <div>
+                  <span class="result-price">{{ item.price | money }}</span>
+                  {% if item.compare_at_price > item.price %}
+                    <span class="result-compare">{{ item.compare_at_price | money }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </article>
+
+          {% elsif item.object_type == 'page' %}
+            <article class="result-item">
+              <div class="result-info" style="padding: 30px;">
+                <span class="result-type" style="position: static; display: inline-block; margin-bottom: 10px;">Página</span>
+                
+                <h3 class="result-title">
+                  <a href="{{ item.url }}">{{ item.title }}</a>
+                </h3>
+
+                {% if item.content != blank %}
+                  <p class="result-excerpt">{{ item.content | strip_html | truncatewords: 20 }}</p>
+                {% endif %}
+              </div>
+            </article>
+
+          {% elsif item.object_type == 'article' %}
+            <article class="result-item">
+              <div class="result-image">
+                <a href="{{ item.url }}">
+                  {% if item.image %}
+                    <img src="{{ item.image | img_url: '500x500' }}" alt="{{ item.title }}" loading="lazy">
+                  {% else %}
+                    <img src="https://via.placeholder.com/500x280/002C54/E9C46A?text=Artículo" alt="{{ item.title }}">
+                  {% endif %}
+                </a>
+                <span class="result-type">Artículo</span>
+              </div>
+
+              <div class="result-info">
+                <h3 class="result-title">
+                  <a href="{{ item.url }}">{{ item.title }}</a>
+                </h3>
+
+                {% if item.excerpt != blank %}
+                  <p class="result-excerpt">{{ item.excerpt | strip_html | truncatewords: 20 }}</p>
+                {% endif %}
+              </div>
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Paginación -->
+      {% if paginate.pages > 1 %}
+        <div style="display: flex; justify-content: center; margin-top: 60px;">
+          {% include 'pagination' %}
+        </div>
+      {% endif %}
+
+    {% else %}
+      <!-- Sin resultados -->
+      <div class="no-results">
+        <div class="no-results-icon">🔍</div>
+        <h2 class="no-results-title">No encontramos resultados</h2>
+        <p class="no-results-text">
+          No hemos encontrado productos para <strong>"{{ search.terms | escape }}"</strong><br>
+          Prueba con otros términos de búsqueda o revisa nuestras sugerencias
+        </p>
+
+        <div class="no-results-suggestions">
+          <h3 class="suggestions-title">Te recomendamos:</h3>
+          <div class="suggestions-list">
+            <a href="/collections/all" class="suggestion-link">Ver todos los productos</a>
+            <a href="/collections/novedades" class="suggestion-link">Novedades</a>
+            <a href="/collections/montessori" class="suggestion-link">Montessori</a>
+            <a href="/collections/ofertas" class="suggestion-link">Ofertas</a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+  {% else %}
+    <!-- Búsquedas populares (cuando no se ha buscado nada) -->
+    <div class="popular-searches">
+      <h2 class="popular-title">🔥 Categorías populares</h2>
+      <div class="popular-grid">
+        <a href="/collections/montessori" class="popular-item">
+          <div class="popular-icon">🧩</div>
+          <div>Montessori</div>
+        </a>
+        <a href="/collections/construccion-y-bloques" class="popular-item">
+          <div class="popular-icon">🧱</div>
+          <div>Construcción</div>
+        </a>
+        <a href="/collections/ciencia-y-stem" class="popular-item">
+          <div class="popular-icon">🔬</div>
+          <div>Ciencia STEM</div>
+        </a>
+        <a href="/collections/disfraces" class="popular-item">
+          <div class="popular-icon">🎭</div>
+          <div>Disfraces</div>
+        </a>
+        <a href="/collections/puzzles" class="popular-item">
+          <div class="popular-icon">🧩</div>
+          <div>Puzzles</div>
+        </a>
+        <a href="/collections/juegos-de-mesa" class="popular-item">
+          <div class="popular-icon">🎲</div>
+          <div>Juegos de mesa</div>
+        </a>
+        <a href="/collections/arte-y-manualidades" class="popular-item">
+          <div class="popular-icon">🎨</div>
+          <div>Arte</div>
+        </a>
+        <a href="/collections/musica" class="popular-item">
+          <div class="popular-icon">🎵</div>
+          <div>Música</div>
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% paginate search.results by 24 %}
+{% endpaginate %}
+
+<script>
+  // Filtrar resultados por tipo
+  function filterResults(type) {
+    const buttons = document.querySelectorAll('.filter-button');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Aquí iría la lógica de filtrado real
+    // Por ahora solo visual
+    alert('Filtro: ' + type + ' (requiere implementación)');
+  }
+
+  // Búsqueda en tiempo real (opcional)
+  const searchInput = document.querySelector('.search-input');
+  let searchTimeout;
+
+  searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    const query = this.value.trim();
+    
+    if (query.length > 2) {
+      searchTimeout = setTimeout(() => {
+        // Aquí iría búsqueda predictiva con fetch
+        console.log('Buscando:', query);
+      }, 300);
+    }
+  });
+</script>

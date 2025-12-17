@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#850101">
+  
+  <title>{{ page_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% if current_page != 1 %} &ndash; Página {{ current_page }}{% endif %} | {{ shop.name }}</title>
+
+  {% if page_description %}
+    <meta name="description" content="{{ page_description | escape }}">
+  {% endif %}
+
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  {% if settings.favicon %}
+    <link rel="icon" type="image/png" href="{{ settings.favicon | img_url: '32x32' }}">
+    <link rel="apple-touch-icon" href="{{ settings.favicon | img_url: '180x180' }}">
+  {% endif %}
+
+  <!-- CSS -->
+  {{ 'style-optimized.css' | asset_url | stylesheet_tag }}
+  
+  <!-- Critical CSS inline -->
+  <style>
+    /* Ocultar headers nativos de Shopify */
+    .shopify-section-group-header-group,
+    #shopify-section-header,
+    header.site-header,
+    .header-wrapper,
+    .announcement-bar-section {
+      display: none !important;
+      height: 0 !important;
+      visibility: hidden !important;
+    }
+    
+    /* Loading spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+
+  <!-- Shopify Scripts -->
+  {{ content_for_header }}
+  
+  <!-- Google Analytics (si está configurado) -->
+  {% if settings.google_analytics_id != blank %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.google_analytics_id }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ settings.google_analytics_id }}');
+  </script>
+  {% endif %}
+</head>
+
+<body class="template-{{ template.name }}{% if customer %} customer-logged-in{% endif %}">
+  
+  <!-- Skip to content (accesibilidad) -->
+  <a href="#main-content" class="skip-to-content">Saltar al contenido</a>
+
+  <!-- ========================================
+       BARRA DE ANUNCIOS
+       ======================================== -->
+  <div class="announcement-strip">
+    <div class="container">
+      <p>
+        🎄 <strong>Últimos días para Reyes</strong> - Envío GRATIS en pedidos +49€ 🎁
+      </p>
+    </div>
+  </div>
+
+  <!-- ========================================
+       HEADER PRINCIPAL
+       ======================================== -->
+  <header id="spqr-unique-header" class="site-header-custom">
+    <div class="container">
+      <div class="header-layout">
+        
+        <!-- MOBILE: Hamburger Menu -->
+        <button class="menu-trigger hide-desktop" id="MenuToggle" aria-label="Abrir menú">
+          <span class="hamburger-icon">☰</span>
+        </button>
+
+        <!-- LOGO -->
+        <div class="header-logo">
+          <a href="/" title="{{ shop.name }}">
+            {% if settings.logo %}
+              <img src="{{ settings.logo | img_url: '200x' }}" alt="{{ shop.name }}" width="160" height="auto">
+            {% else %}
+              <span class="logo-text">{{ shop.name }}</span>
+            {% endif %}
+          </a>
+        </div>
+
+        <!-- DESKTOP: Navigation -->
+        <nav class="header-nav hide-mobile" aria-label="Navegación principal">
+          <ul class="nav-list">
+            <li><a href="/collections/montessori">Montessori</a></li>
+            <li><a href="/collections/construccion-y-bloques">Construcción</a></li>
+            <li><a href="/collections/ciencia-y-stem">STEM</a></li>
+            <li><a href="/collections/disfraces">Disfraces</a></li>
+            <li><a href="/collections/novedades" class="nav-highlight">Novedades 🔥</a></li>
+          </ul>
+        </nav>
+
+        <!-- ACTIONS -->
+        <div class="header-actions">
+          
+          <!-- Búsqueda -->
+          <button class="header-action-btn" id="SearchToggle" aria-label="Buscar">
+            <span class="icon">🔍</span>
+          </button>
+
+          <!-- Modo Niños -->
+          <button class="header-action-btn" data-kids-mode-toggle aria-label="Modo Niños">
+            <span class="icon">👶</span>
+          </button>
+
+          <!-- Wishlist -->
+          <a href="/pages/wishlist" class="header-action-btn" aria-label="Favoritos">
+            <span class="icon">❤️</span>
+            <span class="wishlist-count" data-wishlist-count style="display:none;">0</span>
+          </a>
+
+          <!-- Carrito -->
+          <a href="/cart" class="header-action-btn cart-btn" aria-label="Carrito">
+            <span class="icon">🛒</span>
+            <span class="cart-count" data-cart-count>{{ cart.item_count }}</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Búsqueda Expandible -->
+    <div class="search-bar-wrapper" id="SearchBar" style="display:none;">
+      <div class="container">
+        <div class="search-bar">
+          <input 
+            type="search" 
+            placeholder="Buscar juguetes..." 
+            data-search-input
+            aria-label="Buscar productos">
+          <button type="button" id="SearchClose" aria-label="Cerrar búsqueda">✕</button>
+        </div>
+        <div class="search-results" data-search-results></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================
+       MENÚ MÓVIL (Drawer)
+       ======================================== -->
+  <div class="mobile-menu-overlay" id="MobileMenuOverlay"></div>
+  <div class="mobile-menu-drawer" id="MobileMenu">
+    <div class="mobile-menu-header">
+      <h3>Menú</h3>
+      <button class="mobile-menu-close" id="MenuClose" aria-label="Cerrar menú">✕</button>
+    </div>
+    
+    <nav class="mobile-menu-nav">
+      <ul>
+        <li><a href="/">🏠 Inicio</a></li>
+        <li><a href="/collections/montessori">🧩 Montessori</a></li>
+        <li><a href="/collections/construccion-y-bloques">🧱 Construcción</a></li>
+        <li><a href="/collections/ciencia-y-stem">🔬 STEM</a></li>
+        <li><a href="/collections/disfraces">🎭 Disfraces</a></li>
+        <li><a href="/collections/novedades">🔥 Novedades</a></li>
+        <li><a href="/collections/all">🎁 Ver Todo</a></li>
+        <li class="divider"></li>
+        <li><a href="/pages/contact">📧 Contacto</a></li>
+        <li><a href="/pages/about">ℹ️ Sobre Nosotros</a></li>
+      </ul>
+    </nav>
+
+    <div class="mobile-menu-footer">
+      <p>🚚 Envío GRATIS +49€</p>
+      <p>🔒 Pago 100% Seguro</p>
+    </div>
+  </div>
+
+  <!-- ========================================
+       CONTENIDO PRINCIPAL
+       ======================================== -->
+  <main id="main-content" class="main-content" role="main">
+    {{ content_for_layout }}
+  </main>
+
+  <!-- ========================================
+       FOOTER
+       ======================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      
+      <!-- Footer Top -->
+      <div class="footer-top">
+        <div class="footer-grid">
+          
+          <!-- Columna 1: Newsletter -->
+          <div class="footer-col">
+            <h3 class="footer-title">📬 Newsletter</h3>
+            <p class="footer-subtitle">Ofertas exclusivas y novedades</p>
+            <form action="/contact#newsletter" method="post" class="newsletter-form-footer">
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <input 
+                type="email" 
+                name="contact[email]" 
+                placeholder="tu@email.com" 
+                required 
+                class="newsletter-input"
+                aria-label="Email para newsletter">
+              <button type="submit" class="newsletter-btn">Suscribirme</button>
+            </form>
+          </div>
+
+          <!-- Columna 2: Ayuda -->
+          <div class="footer-col">
+            <h3 class="footer-title">Ayuda</h3>
+            <ul class="footer-links">
+              <li><a href="/pages/faq">Preguntas Frecuentes</a></li>
+              <li><a href="/pages/shipping">Envíos y Entregas</a></li>
+              <li><a href="/pages/returns">Devoluciones</a></li>
+              <li><a href="/pages/warranty">Garantía</a></li>
+              <li><a href="/pages/contact">Contacto</a></li>
+            </ul>
+          </div>
+
+          <!-- Columna 3: Información -->
+          <div class="footer-col">
+            <h3 class="footer-title">Información</h3>
+            <ul class="footer-links">
+              <li><a href="/pages/about">Sobre Nosotros</a></li>
+              <li><a href="/pages/privacy">Privacidad</a></li>
+              <li><a href="/pages/terms">Términos y Condiciones</a></li>
+              <li><a href="/pages/cookies">Política de Cookies</a></li>
+            </ul>
+          </div>
+
+          <!-- Columna 4: Contacto -->
+          <div class="footer-col">
+            <h3 class="footer-title">Contacto</h3>
+            <ul class="footer-contact">
+              <li>
+                <strong>📍 Dirección:</strong><br>
+                Calle Principal 123<br>
+                28001 Madrid, España
+              </li>
+              <li>
+                <strong>📞 Teléfono:</strong><br>
+                <a href="tel:+34912345678">+34 912 345 678</a>
+              </li>
+              <li>
+                <strong>📧 Email:</strong><br>
+                <a href="mailto:hola@spqrshop.com">hola@spqrshop.com</a>
+              </li>
+              <li>
+                <strong>🕐 Horario:</strong><br>
+                Lun-Vie: 9:00-18:00
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Footer Middle: Trust Badges -->
+      <div class="footer-middle">
+        <div class="trust-badges">
+          <div class="trust-badge">
+            <span class="trust-icon">🔒</span>
+            <span class="trust-text">Pago Seguro SSL</span>
+          </div>
+          <div class="trust-badge">
+            <span class="trust-icon">✓</span>
+            <span class="trust-text">Productos Certificados CE</span>
+          </div>
+          <div class="trust-badge">
+            <span class="trust-icon">🚚</span>
+            <span class="trust-text">Envío Gratis +49€</span>
+          </div>
+          <div class="trust-badge">
+            <span class="trust-icon">↩️</span>
+            <span class="trust-text">30 Días Devolución</span>
+          </div>
+          <div class="trust-badge">
+            <span class="trust-icon">⭐</span>
+            <span class="trust-text">+5000 Familias Felices</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="footer-bottom-layout">
+          
+          <!-- Copyright -->
+          <div class="footer-copyright">
+            <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. Todos los derechos reservados.</p>
+          </div>
+
+          <!-- Social -->
+          <div class="footer-social">
+            <a href="https://instagram.com/spqrshop" target="_blank" rel="noopener" aria-label="Instagram">📷</a>
+            <a href="https://facebook.com/spqrshop" target="_blank" rel="noopener" aria-label="Facebook">👤</a>
+            <a href="https://tiktok.com/@spqrshop" target="_blank" rel="noopener" aria-label="TikTok">🎵</a>
+            <a href="https://youtube.com/spqrshop" target="_blank" rel="noopener" aria-label="YouTube">📺</a>
+          </div>
+
+          <!-- Payment Methods -->
+          <div class="footer-payments">
+            <img src="https://cdn.shopify.com/s/files/1/0918/1295/4448/files/visa.svg" alt="Visa" width="40" height="25">
+            <img src="https://cdn.shopify.com/s/files/1/0918/1295/4448/files/mastercard.svg" alt="Mastercard" width="40" height="25">
+            <img src="https://cdn.shopify.com/s/files/1/0918/1295/4448/files/paypal.svg" alt="PayPal" width="40" height="25">
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ========================================
+       SCRIPTS
+       ======================================== -->
+  
+  <!-- JavaScript Principal -->
+  <script src="{{ 'scripts-complete.js' | asset_url }}" defer></script>
+
+  <!-- Scripts adicionales de Shopify -->
+  <script>
+    // Mobile Menu Toggle
+    document.getElementById('MenuToggle')?.addEventListener('click', function() {
+      document.getElementById('MobileMenu').classList.add('active');
+      document.getElementById('MobileMenuOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+
+    function closeMobileMenu() {
+      document.getElementById('MobileMenu').classList.remove('active');
+      document.getElementById('MobileMenuOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('MenuClose')?.addEventListener('click', closeMobileMenu);
+    document.getElementById('MobileMenuOverlay')?.addEventListener('click', closeMobileMenu);
+
+    // Search Toggle
+    document.getElementById('SearchToggle')?.addEventListener('click', function() {
+      const searchBar = document.getElementById('SearchBar');
+      searchBar.style.display = searchBar.style.display === 'none' ? 'block' : 'none';
+      if (searchBar.style.display === 'block') {
+        searchBar.querySelector('[data-search-input]')?.focus();
+      }
+    });
+
+    document.getElementById('SearchClose')?.addEventListener('click', function() {
+      document.getElementById('SearchBar').style.display = 'none';
+    });
+
+    // Auto-inicializar contador del carrito
+    if (window.SPQR && window.SPQR.updateCartCount) {
+      window.SPQR.updateCartCount();
+    }
+  </script>
+
+  <!-- Facebook Pixel (si está configurado) -->
+  {% if settings.facebook_pixel_id != blank %}
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '{{ settings.facebook_pixel_id }}');
+    fbq('track', 'PageView');
+  </script>
+  {% endif %}
+
+</body>
+</html>
+
+<style>
+/* ========================================
+   ESTILOS ADICIONALES DEL THEME
+   ======================================== */
+
+/* Skip to content */
+.skip-to-content {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  z-index: 10000;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Announcement Strip */
+.announcement-strip {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  color: white;
+  text-align: center;
+  padding: var(--space-2);
+  font-size: var(--font-sm);
+  font-weight: 600;
+}
+
+.announcement-strip p {
+  margin: 0;
+}
+
+/* Header */
+.site-header-custom {
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.site-header-custom.scrolled {
+  box-shadow: var(--shadow-md);
+}
+
+.header-layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  gap: var(--space-3);
+}
+
+/* Logo */
+.header-logo a {
+  display: flex;
+  align-items: center;
+}
+
+.logo-text {
+  font-family: var(--font-title);
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Nav */
+.header-nav .nav-list {
+  display: flex;
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.header-nav a {
+  font-weight: 600;
+  font-size: var(--font-sm);
+  transition: color var(--transition-base);
+}
+
+.header-nav a:hover,
+.nav-highlight {
+  color: var(--color-primary);
+}
+
+/* Actions */
+.header-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.header-action-btn {
+  position: relative;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: var(--space-1);
+  transition: transform var(--transition-fast);
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-action-btn:hover {
+  transform: scale(1.1);
+}
+
+.cart-count,
+.wishlist-count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+
+/* Search Bar */
+.search-bar-wrapper {
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-3) 0;
+}
+
+.search-bar {
+  display: flex;
+  gap: var(--space-2);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-base);
+}
+
+.search-bar button {
+  padding: var(--space-2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+/* Mobile Menu */
+.menu-trigger {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: var(--space-1);
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-modal-backdrop);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-base);
+}
+
+.mobile-menu-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-menu-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 85%;
+  max-width: 320px;
+  background: white;
+  z-index: var(--z-modal);
+  transform: translateX(-100%);
+  transition: transform var(--transition-base);
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+}
+
+.mobile-menu-drawer.active {
+  transform: translateX(0);
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mobile-menu-header h3 {
+  margin: 0;
+  font-size: var(--font-lg);
+}
+
+.mobile-menu-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.mobile-menu-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-menu-nav li {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mobile-menu-nav a {
+  display: block;
+  padding: var(--space-3);
+  font-weight: 600;
+  transition: background var(--transition-fast);
+}
+
+.mobile-menu-nav a:hover {
+  background: var(--color-bg);
+}
+
+.mobile-menu-nav .divider {
+  height: var(--space-3);
+  background: var(--color-bg);
+}
+
+.mobile-menu-footer {
+  padding: var(--space-4);
+  background: var(--color-bg);
+  text-align: center;
+  font-size: var(--font-sm);
+}
+
+/* Footer */
+.site-footer {
+  background: var(--color-dark);
+  color: white;
+  padding: var(--space-10) 0 var(--space-4);
+  margin-top: var(--space-10);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.footer-title {
+  color: white;
+  margin-bottom: var(--space-3);
+  font-size: var(--font-lg);
+}
+
+.footer-subtitle {
+  color: rgba(255,255,255,0.7);
+  margin-bottom: var(--space-3);
+  font-size: var(--font-sm);
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li {
+  margin-bottom: var(--space-2);
+}
+
+.footer-links a {
+  color: rgba(255,255,255,0.8);
+  transition: color var(--transition-base);
+}
+
+.footer-links a:hover {
+  color: var(--color-accent);
+}
+
+.footer-contact li {
+  margin-bottom: var(--space-3);
+  color: rgba(255,255,255,0.8);
+  font-size: var(--font-sm);
+}
+
+.footer-contact a {
+  color: var(--color-accent);
+}
+
+/* Newsletter Footer */
+.newsletter-form-footer {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.newsletter-form-footer input {
+  flex: 1;
+  padding: var(--space-2);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.newsletter-form-footer button {
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-accent);
+  color: var(--color-dark);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.newsletter-form-footer button:hover {
+  background: var(--color-accent-dark);
+}
+
+/* Trust Badges */
+.footer-middle {
+  padding: var(--space-6) 0;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-sm);
+}
+
+.trust-icon {
+  font-size: 1.2rem;
+}
+
+/* Footer Bottom */
+.footer-bottom {
+  padding-top: var(--space-6);
+}
+
+.footer-bottom-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.footer-copyright {
+  font-size: var(--font-sm);
+  color: rgba(255,255,255,0.6);
+}
+
+.footer-social {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.footer-social a {
+  font-size: 1.5rem;
+  transition: transform var(--transition-fast);
+}
+
+.footer-social a:hover {
+  transform: scale(1.2);
+}
+
+.footer-payments {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+/* Responsive */
+@media (max-width: 1023px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-bottom-layout {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .trust-badges {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>

@@ -1,0 +1,874 @@
+<!-- HERO CAROUSEL -->
+<div class="hero-carousel-container">
+  <div class="hero-carousel">
+    <div class="hero-slide active" style="background-image: url('https://cdn.shopify.com/s/files/1/0918/1295/4448/files/banner-home.png?v=1765496770')">
+      <div class="hero-content">
+        <h1 class="hero-title">Tu Carta a los Reyes Magos 🐫</h1>
+        <p class="hero-subtitle">Miles de juguetes educativos y divertidos</p>
+        <a href="/collections/all" class="hero-btn">Explorar Catálogo</a>
+      </div>
+    </div>
+    
+    <div class="hero-slide" style="background: linear-gradient(135deg, #850101 0%, #a81515 100%)">
+      <div class="hero-content">
+        <h1 class="hero-title">🎁 Envío GRATIS +49€</h1>
+        <p class="hero-subtitle">Recíbelo antes de Reyes</p>
+        <a href="/collections/novedades" class="hero-btn">Ver Novedades</a>
+      </div>
+    </div>
+    
+    <div class="hero-slide" style="background: linear-gradient(135deg, #002C54 0%, #004080 100%)">
+      <div class="hero-content">
+        <h1 class="hero-title">🧩 Método Montessori</h1>
+        <p class="hero-subtitle">Juguetes educativos de alta calidad</p>
+        <a href="/collections/montessori" class="hero-btn">Descubrir</a>
+      </div>
+    </div>
+  </div>
+  
+  <button class="carousel-btn prev" onclick="changeSlide(-1)">‹</button>
+  <button class="carousel-btn next" onclick="changeSlide(1)">›</button>
+  
+  <div class="carousel-dots">
+    <span class="dot active" onclick="goToSlide(0)"></span>
+    <span class="dot" onclick="goToSlide(1)"></span>
+    <span class="dot" onclick="goToSlide(2)"></span>
+  </div>
+</div>
+
+<!-- CATEGORÍAS DESTACADAS -->
+<section class="categories-section">
+  <div class="container">
+    <h2 class="section-title">Explora por Categoría</h2>
+    <p class="section-subtitle">Encuentra el juguete perfecto para cada edad e interés</p>
+    
+    <div class="categories-grid">
+      <a href="/collections/montessori" class="category-card">
+        <div class="category-icon">🧩</div>
+        <h3>Método Montessori</h3>
+        <p>Juguetes educativos</p>
+        <span class="category-arrow">→</span>
+      </a>
+      
+      <a href="/collections/construccion-y-bloques" class="category-card">
+        <div class="category-icon">🧱</div>
+        <h3>Construcción</h3>
+        <p>Bloques y sets creativos</p>
+        <span class="category-arrow">→</span>
+      </a>
+      
+      <a href="/collections/ciencia-y-stem" class="category-card">
+        <div class="category-icon">🔬</div>
+        <h3>Ciencia & STEM</h3>
+        <p>Experimenta y aprende</p>
+        <span class="category-arrow">→</span>
+      </a>
+      
+      <a href="/collections/disfraces" class="category-card">
+        <div class="category-icon">🎭</div>
+        <h3>Disfraces</h3>
+        <p>Juego imaginativo</p>
+        <span class="category-arrow">→</span>
+      </a>
+      
+      <a href="/collections/novedades" class="category-card featured">
+        <div class="category-icon">🔥</div>
+        <h3>Novedades</h3>
+        <p>Lo último en juguetes</p>
+        <span class="category-arrow">→</span>
+      </a>
+      
+      <a href="/collections/all" class="category-card">
+        <div class="category-icon">🎁</div>
+        <h3>Ver Todo</h3>
+        <p>Catálogo completo</p>
+        <span class="category-arrow">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTOS DESTACADOS -->
+<section class="featured-products-section">
+  <div class="container">
+    <h2 class="section-title">Los Más Pedidos 🌟</h2>
+    <p class="section-subtitle">Los juguetes favoritos de nuestros clientes</p>
+    
+    <div class="products-grid">
+      {% assign featured_collection = collections['novedades'] | default: collections.all %}
+      {% for product in featured_collection.products limit: 8 %}
+        <div class="product-card">
+          <a href="{{ product.url }}" class="product-image-wrapper">
+            {% if product.featured_image %}
+              <img src="{{ product.featured_image | img_url: '400x400', crop: 'center' }}" alt="{{ product.title | escape }}" class="product-image">
+            {% else %}
+              <div class="product-image-placeholder">Sin imagen</div>
+            {% endif %}
+            
+            {% if product.compare_at_price > product.price %}
+              <span class="product-badge sale">OFERTA</span>
+            {% endif %}
+            
+            {% if product.available == false %}
+              <span class="product-badge sold-out">AGOTADO</span>
+            {% endif %}
+          </a>
+          
+          <div class="product-info">
+            <h3 class="product-title">
+              <a href="{{ product.url }}">{{ product.title }}</a>
+            </h3>
+            
+            <div class="product-price">
+              {% if product.compare_at_price > product.price %}
+                <span class="price-compare">{{ product.compare_at_price | money }}</span>
+                <span class="price-sale">{{ product.price | money }}</span>
+              {% else %}
+                <span class="price-regular">{{ product.price | money }}</span>
+              {% endif %}
+            </div>
+            
+            <a href="{{ product.url }}" class="product-btn">Ver Detalles</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <div class="section-cta">
+      <a href="/collections/all" class="btn-primary-large">Ver Todo el Catálogo</a>
+    </div>
+  </div>
+</section>
+
+<!-- PROMOCIÓN DESTACADA -->
+<section class="promo-banner">
+  <div class="container">
+    <div class="promo-content">
+      <div class="promo-icon">🎄</div>
+      <div class="promo-text">
+        <h3>Últimos Días para Reyes</h3>
+        <p>Envío express disponible | Garantía de entrega antes del 6 de Enero</p>
+      </div>
+      <a href="/collections/all" class="promo-btn">Comprar Ahora</a>
+    </div>
+  </div>
+</section>
+
+<!-- POR QUÉ ELEGIRNOS -->
+<section class="why-us-section">
+  <div class="container">
+    <h2 class="section-title">¿Por Qué Comprar en SPQR?</h2>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎁</div>
+        <h3>Juguetes de Calidad</h3>
+        <p>Selección cuidada de productos educativos y seguros para todas las edades</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🚚</div>
+        <h3>Envío Rápido</h3>
+        <p>Entrega en 24-48h. Gratis en pedidos superiores a 49€</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Pago Seguro</h3>
+        <p>Compra con total tranquilidad. Datos protegidos y encriptados</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">↩️</div>
+        <h3>Devoluciones Fáciles</h3>
+        <p>30 días para devolver sin preguntas. Proceso simple y rápido</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter-section">
+  <div class="container">
+    <div class="newsletter-card">
+      <div class="newsletter-content">
+        <h3>📬 Suscríbete y Ahorra</h3>
+        <p>Recibe ofertas exclusivas y novedades directamente en tu email</p>
+      </div>
+      <form action="/contact#newsletter" method="post" class="newsletter-form">
+        <input type="email" name="contact[email]" placeholder="tu@email.com" required class="newsletter-input">
+        <button type="submit" class="newsletter-btn">Suscribirme</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+:root {
+  --color-primary: #850101;
+  --color-secondary: #E9C46A;
+  --color-dark: #002C54;
+  --color-text: #333;
+  --spacing: 80px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* === HERO CAROUSEL === */
+.hero-carousel-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+  margin-bottom: var(--spacing);
+}
+
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.hero-slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.hero-content {
+  text-align: center;
+  color: white;
+  z-index: 2;
+  padding: 40px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  max-width: 700px;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin-bottom: 20px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 1.4rem;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.hero-btn {
+  display: inline-block;
+  padding: 18px 50px;
+  background: white;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hero-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  background: var(--color-secondary);
+  color: var(--color-dark);
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-dark);
+  border: none;
+  width: 50px;
+  height: 50px;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 3;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.carousel-btn:hover {
+  background: white;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn.prev { left: 30px; }
+.carousel-btn.next { right: 30px; }
+
+.carousel-dots {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 3;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: white;
+  transform: scale(1.3);
+}
+
+/* === SECCIONES === */
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem;
+  text-align: center;
+  color: var(--color-dark);
+  margin-bottom: 15px;
+  font-weight: 900;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 50px;
+}
+
+/* === CATEGORÍAS === */
+.categories-section {
+  padding: var(--spacing) 0;
+  background: white;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.category-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+  padding: 40px 30px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--color-dark);
+  border-radius: 20px;
+  border: 2px solid #f0f0f0;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-secondary) 0%, #d4af37 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+}
+
+.category-card:hover::before {
+  opacity: 0.1;
+}
+
+.category-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-secondary);
+}
+
+.category-card.featured {
+  border: 2px solid var(--color-primary);
+  background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+}
+
+.category-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.category-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.category-card p {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.category-arrow {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.category-card:hover .category-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* === PRODUCTOS === */
+.featured-products-section {
+  padding: var(--spacing) 0;
+  background: #f9f9f9;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.product-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.product-image-wrapper {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  padding-top: 100%;
+  background: #f5f5f5;
+}
+
+.product-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.1);
+}
+
+.product-image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0e0e0;
+  color: #999;
+}
+
+.product-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
+
+.product-badge.sale {
+  background: #ff4444;
+  color: white;
+}
+
+.product-badge.sold-out {
+  background: #666;
+  color: white;
+}
+
+.product-info {
+  padding: 25px;
+}
+
+.product-title {
+  margin: 0 0 15px;
+}
+
+.product-title a {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.3s ease;
+}
+
+.product-title a:hover {
+  color: var(--color-primary);
+}
+
+.product-price {
+  margin-bottom: 20px;
+}
+
+.price-regular {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.price-compare {
+  font-size: 1.1rem;
+  color: #999;
+  text-decoration: line-through;
+  margin-right: 10px;
+}
+
+.price-sale {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ff4444;
+}
+
+.product-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: var(--color-dark);
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.product-btn:hover {
+  background: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.section-cta {
+  text-align: center;
+}
+
+.btn-primary-large {
+  display: inline-block;
+  padding: 18px 60px;
+  background: var(--color-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(133, 1, 1, 0.3);
+}
+
+.btn-primary-large:hover {
+  background: #a81515;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(133, 1, 1, 0.4);
+}
+
+/* === PROMOCIÓN === */
+.promo-banner {
+  background: linear-gradient(135deg, var(--color-secondary) 0%, #d4af37 100%);
+  padding: 60px 0;
+  margin: var(--spacing) 0;
+}
+
+.promo-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.promo-icon {
+  font-size: 4rem;
+}
+
+.promo-text {
+  flex: 1;
+}
+
+.promo-text h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--color-dark);
+  margin-bottom: 10px;
+}
+
+.promo-text p {
+  color: #555;
+  font-size: 1.1rem;
+}
+
+.promo-btn {
+  padding: 15px 40px;
+  background: var(--color-dark);
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.promo-btn:hover {
+  background: var(--color-primary);
+  transform: scale(1.05);
+}
+
+/* === POR QUÉ ELEGIRNOS === */
+.why-us-section {
+  padding: var(--spacing) 0;
+  background: white;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+}
+
+.feature-card {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.feature-icon {
+  font-size: 4rem;
+  margin-bottom: 25px;
+}
+
+.feature-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--color-dark);
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.feature-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* === NEWSLETTER === */
+.newsletter-section {
+  padding: var(--spacing) 0;
+  background: #f9f9f9;
+}
+
+.newsletter-card {
+  background: linear-gradient(135deg, var(--color-dark) 0%, #004080 100%);
+  padding: 60px 40px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+  box-shadow: 0 15px 50px rgba(0, 44, 84, 0.3);
+}
+
+.newsletter-content {
+  color: white;
+  flex: 1;
+}
+
+.newsletter-content h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.newsletter-content p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  max-width: 500px;
+}
+
+.newsletter-input {
+  flex: 1;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+}
+
+.newsletter-btn {
+  padding: 15px 35px;
+  background: var(--color-secondary);
+  color: var(--color-dark);
+  border: none;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.newsletter-btn:hover {
+  background: #d4af37;
+  transform: scale(1.05);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  :root {
+    --spacing: 50px;
+  }
+  
+  .hero-carousel-container {
+    height: 450px;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .carousel-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+  
+  .carousel-btn.prev { left: 15px; }
+  .carousel-btn.next { right: 15px; }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+  
+  .product-info {
+    padding: 15px;
+  }
+  
+  .promo-content {
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .newsletter-card {
+    padding: 40px 20px;
+    text-align: center;
+  }
+  
+  .newsletter-form {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+</style>
+
+<script>
+let currentSlide = 0;
+const slides = document.querySelectorAll('.hero-slide');
+const dots = document.querySelectorAll('.dot');
+
+function showSlide(n) {
+  slides[currentSlide].classList.remove('active');
+  dots[currentSlide].classList.remove('active');
+  
+  currentSlide = (n + slides.length) % slides.length;
+  
+  slides[currentSlide].classList.add('active');
+  dots[currentSlide].classList.add('active');
+}
+
+function changeSlide(direction) {
+  showSlide(currentSlide + direction);
+}
+
+function goToSlide(n) {
+  showSlide(n);
+}
+
+// Auto-advance carousel
+setInterval(() => {
+  changeSlide(1);
+}, 5000);
+</script>

@@ -1,0 +1,721 @@
+{% comment %}
+  ===================================
+  PÁGINA DE PRODUCTO - JUGUETERÍA SPQR
+  Optimizada para conversión según Manual de Diseño UX v1.0
+  ===================================
+{% endcomment %}
+
+<style>
+  /* === LAYOUT PRODUCTO === */
+  .product-container {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  /* === GALERÍA DE IMÁGENES === */
+  .product-gallery {
+    position: sticky;
+    top: 120px;
+  }
+
+  .main-image-wrapper {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+
+  .main-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    cursor: zoom-in;
+  }
+
+  .badge-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+  }
+
+  .badge {
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .badge-new { background: linear-gradient(135deg, #E9C46A, #d4af37); color: #002C54; }
+  .badge-sale { background: linear-gradient(135deg, #850101, #a81515); color: white; }
+  .badge-stock { background: linear-gradient(135deg, #2a9d8f, #1b7968); color: white; }
+
+  .thumbnail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px;
+  }
+
+  .thumbnail {
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    background: white;
+  }
+
+  .thumbnail:hover,
+  .thumbnail.active {
+    border-color: #E9C46A;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(233, 196, 106, 0.3);
+  }
+
+  .thumbnail img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* === INFORMACIÓN DEL PRODUCTO === */
+  .product-info {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  }
+
+  .product-vendor {
+    color: #850101;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .product-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: #002C54;
+    margin: 0 0 20px 0;
+    line-height: 1.2;
+  }
+
+  .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .stars {
+    color: #E9C46A;
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+  }
+
+  .rating-count {
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  /* === PRECIO === */
+  .price-block {
+    background: linear-gradient(135deg, #002C54, #001a33);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+  }
+
+  .price-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .price-current {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #E9C46A;
+  }
+
+  .price-compare {
+    font-size: 1.5rem;
+    color: rgba(255,255,255,0.5);
+    text-decoration: line-through;
+  }
+
+  .price-save {
+    background: #850101;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  /* === CARACTERÍSTICAS EDUCATIVAS === */
+  .edu-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+    padding: 30px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+  }
+
+  .edu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .edu-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .edu-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #002C54;
+  }
+
+  /* === INFORMACIÓN DE EDAD === */
+  .age-info {
+    background: linear-gradient(135deg, #E9C46A, #d4af37);
+    padding: 20px 30px;
+    border-radius: 12px;
+    margin: 25px 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .age-icon {
+    font-size: 2.5rem;
+  }
+
+  .age-text {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #002C54;
+  }
+
+  /* === SELECTOR DE VARIANTES === */
+  .variant-selector {
+    margin: 30px 0;
+  }
+
+  .variant-label {
+    font-weight: 700;
+    color: #002C54;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+  }
+
+  .variant-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .variant-option {
+    padding: 12px 24px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    background: white;
+  }
+
+  .variant-option:hover {
+    border-color: #E9C46A;
+    background: rgba(233, 196, 106, 0.1);
+  }
+
+  .variant-option.active {
+    border-color: #002C54;
+    background: #002C54;
+    color: white;
+  }
+
+  .variant-option.unavailable {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  /* === BOTONES DE ACCIÓN === */
+  .action-buttons {
+    display: flex;
+    gap: 15px;
+    margin: 35px 0;
+  }
+
+  .btn-add-cart {
+    flex: 1;
+    background: linear-gradient(135deg, #850101, #a81515);
+    color: white;
+    border: none;
+    padding: 20px 40px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 6px 20px rgba(133, 1, 1, 0.3);
+  }
+
+  .btn-add-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(133, 1, 1, 0.4);
+  }
+
+  .btn-add-cart:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-wishlist {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #E9C46A;
+    background: white;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-wishlist:hover {
+    background: #E9C46A;
+    transform: scale(1.1);
+  }
+
+  /* === GARANTÍAS === */
+  .guarantees {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+    padding: 25px;
+    background: white;
+    border: 2px dashed #E9C46A;
+    border-radius: 12px;
+  }
+
+  .guarantee-item {
+    text-align: center;
+  }
+
+  .guarantee-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+
+  .guarantee-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #002C54;
+  }
+
+  /* === DESCRIPCIÓN Y TABS === */
+  .product-details {
+    max-width: 1400px;
+    margin: 60px auto;
+    padding: 0 20px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 20px;
+    border-bottom: 3px solid #E9C46A;
+    margin-bottom: 30px;
+  }
+
+  .tab-button {
+    padding: 15px 30px;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .tab-button.active {
+    color: #002C54;
+  }
+
+  .tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #002C54;
+  }
+
+  .tab-content {
+    display: none;
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    line-height: 1.8;
+  }
+
+  .tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === CROSS-SELLING === */
+  .cross-sell {
+    max-width: 1400px;
+    margin: 60px auto;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 16px;
+  }
+
+  .cross-sell-title {
+    font-family: 'Playfair Display';
+    font-size: 2rem;
+    color: #002C54;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .cross-sell-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 968px) {
+    .product-container {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .product-gallery {
+      position: static;
+    }
+
+    .product-title {
+      font-size: 2rem;
+    }
+
+    .price-current {
+      font-size: 2.5rem;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .btn-wishlist {
+      width: 100%;
+    }
+
+    .tabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+</style>
+
+<div class="product-container">
+  <!-- === GALERÍA === -->
+  <div class="product-gallery">
+    <div class="main-image-wrapper">
+      <div class="badge-container">
+        {% if product.available == false %}
+          <span class="badge badge-stock">Agotado</span>
+        {% elsif product.compare_at_price > product.price %}
+          <span class="badge badge-sale">-{{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%</span>
+        {% endif %}
+        
+        {% if product.tags contains 'nuevo' or product.tags contains 'novedad' %}
+          <span class="badge badge-new">Nuevo</span>
+        {% endif %}
+      </div>
+      
+      <img 
+        id="mainImage"
+        src="{{ product.featured_image | img_url: '800x800' }}" 
+        alt="{{ product.featured_image.alt | default: product.title }}"
+        class="main-image"
+        loading="eager"
+      >
+    </div>
+
+    {% if product.images.size > 1 %}
+      <div class="thumbnail-grid">
+        {% for image in product.images %}
+          <div class="thumbnail {% if forloop.first %}active{% endif %}" onclick="changeImage('{{ image | img_url: '800x800' }}', this)">
+            <img src="{{ image | img_url: '150x150' }}" alt="{{ image.alt | default: product.title }}" loading="lazy">
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- === INFORMACIÓN === -->
+  <div class="product-info">
+    <div class="product-vendor">{{ product.vendor }}</div>
+    <h1 class="product-title">{{ product.title }}</h1>
+
+    <!-- Rating -->
+    <div class="product-rating">
+      <div class="stars">★★★★★</div>
+      <span class="rating-count">(4.8 | 127 reseñas)</span>
+    </div>
+
+    <!-- Precio -->
+    <div class="price-block">
+      <div class="price-wrapper">
+        <span class="price-current">{{ product.price | money }}</span>
+        {% if product.compare_at_price > product.price %}
+          <span class="price-compare">{{ product.compare_at_price | money }}</span>
+          <span class="price-save">Ahorras {{ product.compare_at_price | minus: product.price | money }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Edad recomendada -->
+    {% if product.metafields.custom.edad_minima %}
+      <div class="age-info">
+        <span class="age-icon">👶</span>
+        <span class="age-text">Edad recomendada: {{ product.metafields.custom.edad_minima }}+</span>
+      </div>
+    {% endif %}
+
+    <!-- Habilidades educativas -->
+    {% if product.metafields.custom.habilidades %}
+      <div class="edu-features">
+        {% assign skills = product.metafields.custom.habilidades | split: ',' %}
+        {% for skill in skills limit: 4 %}
+          <div class="edu-item">
+            <span class="edu-icon">🎯</span>
+            <span class="edu-text">{{ skill | strip }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Formulario de compra -->
+    <form action="/cart/add" method="post" enctype="multipart/form-data" id="product-form">
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+      <!-- Variantes -->
+      {% unless product.has_only_default_variant %}
+        <div class="variant-selector">
+          <label class="variant-label">Selecciona una opción:</label>
+          <div class="variant-options" id="variant-options">
+            {% for variant in product.variants %}
+              <div class="variant-option {% unless variant.available %}unavailable{% endunless %}" 
+                   data-variant-id="{{ variant.id }}"
+                   data-price="{{ variant.price | money }}"
+                   onclick="selectVariant({{ variant.id }}, this)">
+                {{ variant.title }}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endunless %}
+
+      <!-- Botones de acción -->
+      <div class="action-buttons">
+        <button type="submit" class="btn-add-cart" {% unless product.available %}disabled{% endunless %}>
+          {% if product.available %}
+            🛒 Añadir al carrito
+          {% else %}
+            Agotado
+          {% endif %}
+        </button>
+        <button type="button" class="btn-wishlist" onclick="toggleWishlist({{ product.id }})">
+          ❤️
+        </button>
+      </div>
+    </form>
+
+    <!-- Garantías -->
+    <div class="guarantees">
+      <div class="guarantee-item">
+        <div class="guarantee-icon">🚚</div>
+        <div class="guarantee-text">Envío gratis +49€</div>
+      </div>
+      <div class="guarantee-item">
+        <div class="guarantee-icon">↩️</div>
+        <div class="guarantee-text">30 días devolución</div>
+      </div>
+      <div class="guarantee-item">
+        <div class="guarantee-icon">🔒</div>
+        <div class="guarantee-text">Pago seguro</div>
+      </div>
+      <div class="guarantee-item">
+        <div class="guarantee-icon">✅</div>
+        <div class="guarantee-text">Certificado CE</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- === TABS DE INFORMACIÓN === -->
+<div class="product-details">
+  <div class="tabs">
+    <button class="tab-button active" onclick="switchTab(0, this)">📝 Descripción</button>
+    <button class="tab-button" onclick="switchTab(1, this)">🎯 Características</button>
+    <button class="tab-button" onclick="switchTab(2, this)">📦 Envío</button>
+    <button class="tab-button" onclick="switchTab(3, this)">💬 Reseñas</button>
+  </div>
+
+  <div class="tab-content active">
+    <h2 style="color: #002C54; margin-bottom: 20px;">Descripción del producto</h2>
+    {{ product.description }}
+  </div>
+
+  <div class="tab-content">
+    <h2 style="color: #002C54; margin-bottom: 20px;">Características técnicas</h2>
+    <ul style="line-height: 2; font-size: 1.05rem;">
+      <li><strong>Material:</strong> Plástico ABS libre de BPA</li>
+      <li><strong>Dimensiones:</strong> 30 x 20 x 15 cm</li>
+      <li><strong>Peso:</strong> 450g</li>
+      <li><strong>Certificaciones:</strong> CE, EN71</li>
+      {% if product.metafields.custom.edad_minima %}
+        <li><strong>Edad:</strong> {{ product.metafields.custom.edad_minima }}+ años</li>
+      {% endif %}
+    </ul>
+  </div>
+
+  <div class="tab-content">
+    <h2 style="color: #002C54; margin-bottom: 20px;">Información de envío</h2>
+    <p><strong>📦 Envío estándar:</strong> 3-5 días laborables (4,95€)</p>
+    <p><strong>🚀 Envío express:</strong> 24-48h (9,95€)</p>
+    <p><strong>🎁 Envío GRATIS:</strong> En pedidos superiores a 49€</p>
+    <p style="margin-top: 20px;"><strong>Devoluciones:</strong> 30 días desde la recepción. Producto sin usar y en embalaje original.</p>
+  </div>
+
+  <div class="tab-content">
+    <h2 style="color: #002C54; margin-bottom: 20px;">Opiniones de clientes</h2>
+    <p style="text-align: center; padding: 40px; color: #666;">Las reseñas aparecerán próximamente...</p>
+  </div>
+</div>
+
+<!-- === PRODUCTOS COMPLEMENTARIOS === -->
+{% if product.metafields.custom.complemento %}
+  <div class="cross-sell">
+    <h2 class="cross-sell-title">🎁 Completa tu compra</h2>
+    <div class="cross-sell-grid">
+      <!-- Aquí irían productos relacionados -->
+    </div>
+  </div>
+{% endif %}
+
+<script>
+  // Cambiar imagen principal
+  function changeImage(imageSrc, thumbnail) {
+    document.getElementById('mainImage').src = imageSrc;
+    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+    thumbnail.classList.add('active');
+  }
+
+  // Seleccionar variante
+  function selectVariant(variantId, element) {
+    if (element.classList.contains('unavailable')) return;
+    
+    document.querySelectorAll('.variant-option').forEach(v => v.classList.remove('active'));
+    element.classList.add('active');
+    document.querySelector('input[name="id"]').value = variantId;
+    
+    // Actualizar precio si es necesario
+    const price = element.dataset.price;
+    if (price) {
+      document.querySelector('.price-current').textContent = price;
+    }
+  }
+
+  // Cambiar tabs
+  function switchTab(index, button) {
+    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    button.classList.add('active');
+    document.querySelectorAll('.tab-content')[index].classList.add('active');
+  }
+
+  // Añadir al carrito (Ajax)
+  document.getElementById('product-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/cart/add.js', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Actualizar contador del carrito
+      fetch('/cart.js')
+        .then(r => r.json())
+        .then(cart => {
+          document.querySelector('[data-cart-count]').textContent = cart.item_count;
+          alert('✅ Producto añadido al carrito');
+        });
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('❌ Error al añadir al carrito');
+    });
+  });
+
+  // Wishlist (requiere scripts-complete.js)
+  function toggleWishlist(productId) {
+    if (window.SPQRShop && window.SPQRShop.wishlist) {
+      window.SPQRShop.wishlist.toggle(productId);
+    } else {
+      alert('❤️ Añadido a favoritos');
+    }
+  }
+</script>
